@@ -37,6 +37,7 @@ import org.w3c.dom.NodeList;
 
 import com.alibaba.cobar.config.model.rule.RuleAlgorithm;
 import com.alibaba.cobar.config.model.rule.RuleConfig;
+import com.alibaba.cobar.config.model.rule.RuleConfigSp;
 import com.alibaba.cobar.config.model.rule.TableRuleConfig;
 import com.alibaba.cobar.config.util.ConfigException;
 import com.alibaba.cobar.config.util.ConfigUtil;
@@ -54,11 +55,20 @@ public class XMLRuleLoader {
     private final Map<String, TableRuleConfig> tableRules;
     private final Set<RuleConfig> rules;
     private final Map<String, RuleAlgorithm> functions;
+    
+    private final Set<RuleConfigSp> rulesSp;
+    private final Map<String, Integer> tableNameRoute;
+
 
     public XMLRuleLoader(String ruleFile) {
         this.rules = new HashSet<RuleConfig>();
         this.tableRules = new HashMap<String, TableRuleConfig>();
         this.functions = new HashMap<String, RuleAlgorithm>();
+        
+        this.rulesSp = new HashSet<RuleConfigSp>();
+        this.tableNameRoute = new HashMap<String, Integer>();
+
+        
         load(DEFAULT_DTD, ruleFile == null ? DEFAULT_XML : ruleFile);
     }
 
@@ -77,8 +87,19 @@ public class XMLRuleLoader {
     public Map<String, RuleAlgorithm> getFunctions() {
         return (Map<String, RuleAlgorithm>) (functions.isEmpty() ? Collections.emptyMap() : functions);
     }
+    
+    
+    
+    public Set<RuleConfigSp> listRuleConfigSp() {
+        return (Set<RuleConfigSp>) ((rulesSp == null || rulesSp.isEmpty()) ? Collections.emptySet() : rulesSp);
+    }
+    
+    public Map<String, Integer> getTableNameRoute() {
+		return tableNameRoute;
+	}
 
-    private void load(String dtdFile, String xmlFile) {
+
+	private void load(String dtdFile, String xmlFile) {
         InputStream dtd = null;
         InputStream xml = null;
         try {
@@ -87,6 +108,7 @@ public class XMLRuleLoader {
             Element root = ConfigUtil.getDocument(dtd, xml).getDocumentElement();
             loadFunctions(root);
             loadTableRules(root);
+            loadTableNameRouteRules(root);
         } catch (ConfigException e) {
             throw e;
         } catch (Exception e) {
@@ -106,8 +128,52 @@ public class XMLRuleLoader {
             }
         }
     }
+    
+    /**
+     * new 
+     * @param root
+     */
+    private void loadTableNameRouteRules(Element root) {
+        NodeList list = root.getElementsByTagName("tableRuleSp");
+        for (int i = 0, n = list.getLength(); i < n; ++i) {
+            Node node = list.item(i);
+            if (node instanceof Element) {
+                Element e = (Element) node;
+                String name = e.getAttribute("name");
+//                if (tableRules.containsKey(name)) {
+//                    throw new ConfigException("table rule " + name + " duplicated!");
+//                }
+//                if (tableNameRoute.containsKey(name)) {
+//                	throw new ConfigException("table rule " + name + " duplicated! in another rule");	
+//                }
+                NodeList ruleNodes = e.getElementsByTagName("tableNameRule");
+                int length = ruleNodes.getLength();
+                //List<RuleConfigSp> ruleList = new ArrayList<RuleConfigSp>(length);
+                for (int j = 0; j < length; ++j) {
+                	RuleConfigSp rule = loadRuleSp((Element) ruleNodes.item(j));
+                    //ruleList.add(rule);
+                    rulesSp.add(rule);
+                    tableNameRoute.putAll(rule.getRouteTable());
+                }
+                //
+                //tableRules.put(name, new TableRuleConfig(name, ruleList));
+            }
+        }
+		
+	}
 
-    private void loadTableRules(Element root) throws SQLSyntaxErrorException {
+	private RuleConfigSp loadRuleSp(Element element) {
+		NodeList list = element.getElementsByTagName("range");
+		List<String> strList = new ArrayList(list.getLength());
+		for (int i = 0, n = list.getLength() ; i< n; i++) {
+			Element e = (Element) list.item(i);
+			strList.add(i, e.getTextContent());
+		}
+		
+		return new RuleConfigSp(strList);
+	}
+
+	private void loadTableRules(Element root) throws SQLSyntaxErrorException {
         NodeList list = root.getElementsByTagName("tableRule");
         for (int i = 0, n = list.getLength(); i < n; ++i) {
             Node node = list.item(i);

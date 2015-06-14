@@ -58,16 +58,22 @@ public class XMLSchemaLoader implements SchemaLoader {
     private final Map<String, DataSourceConfig> dataSources;
     private final Map<String, DataNodeConfig> dataNodes;
     private final Map<String, SchemaConfig> schemas;
+    
+    private final Map<String, Integer> tableNameRoute;
 
     public XMLSchemaLoader(String schemaFile, String ruleFile) {
         XMLRuleLoader ruleLoader = new XMLRuleLoader(ruleFile);
         this.rules = ruleLoader.listRuleConfig();
         this.tableRules = ruleLoader.getTableRules();
         this.functions = ruleLoader.getFunctions();
+        this.tableNameRoute = ruleLoader.getTableNameRoute();
+        
         ruleLoader = null;
         this.dataSources = new HashMap<String, DataSourceConfig>();
         this.dataNodes = new HashMap<String, DataNodeConfig>();
         this.schemas = new HashMap<String, SchemaConfig>();
+        
+        
         this.load(DEFAULT_DTD, schemaFile == null ? DEFAULT_XML : schemaFile);
     }
 
@@ -159,7 +165,13 @@ public class XMLSchemaLoader implements SchemaLoader {
             if (schemaElement.hasAttribute("keepSqlSchema")) {
                 keepSqlSchema = Boolean.parseBoolean(schemaElement.getAttribute("keepSqlSchema").trim());
             }
-            schemas.put(name, new SchemaConfig(name, dataNode, group, keepSqlSchema, tables));
+            
+            boolean routeByTable = false;
+            if (schemaElement.hasAttribute("routeByTable")) {
+            	routeByTable = Boolean.parseBoolean(schemaElement.getAttribute("routeByTable").trim());
+            }
+            
+            schemas.put(name, new SchemaConfig(name, dataNode, group, keepSqlSchema, routeByTable, tableNameRoute, tables));
         }
     }
 

@@ -58,6 +58,7 @@ import com.alibaba.cobar.parser.visitor.MySQLOutputASTVisitor;
 import com.alibaba.cobar.route.hint.CobarHint;
 import com.alibaba.cobar.route.visitor.PartitionKeyVisitor;
 import com.alibaba.cobar.util.CollectionUtil;
+import com.alibaba.cobar.util.QuickParserUtil;
 
 /**
  * @author xianmao.hexm
@@ -65,8 +66,14 @@ import com.alibaba.cobar.util.CollectionUtil;
  */
 public final class ServerRouter {
     private static final Logger LOGGER = Logger.getLogger(ServerRouter.class);
-
+    
+    
     public static RouteResultset route(SchemaConfig schema, String stmt, String charset, Object info)
+            throws SQLNonTransientException {
+    	return route (schema, stmt, charset, info, -1);
+    }
+    
+    public static RouteResultset route(SchemaConfig schema, String stmt, String charset, Object info, int type)
             throws SQLNonTransientException {
         RouteResultset rrs = new RouteResultset(stmt);
 
@@ -89,11 +96,59 @@ public final class ServerRouter {
                     stmt = genSQL(ast, stmt);
                 }
             }
-            RouteResultsetNode[] nodes = new RouteResultsetNode[1];
-            nodes[0] = new RouteResultsetNode(schema.getDataNode(), stmt);
-            rrs.setNodes(nodes);
-            return rrs;
+            
+        	RouteResultsetNode[] nodes = new RouteResultsetNode[1];
+        	nodes[0] = new RouteResultsetNode(schema.getDataNode(), stmt);
+        	rrs.setNodes(nodes);
+        	return rrs;
+            
+        } 
+        
+        /**
+         *	目前的按表名路由的快速实现 
+         */
+        if (schema.isRouteByTable()) {
+        	Map<String, TableConfig> tables = schema.getTables();
+        	//快速定义：allDataNodeForRoute 为使用的 table name
+        	TableConfig spTable = tables.get("ALLDATANODEFORROUTE");
+        	//
+        	System.out.println(stmt);
+        	System.out.println(spTable);
+        	
+        	if (spTable != null) {
+        		String[] dataNodes = spTable.getDataNodes();
+            	
+            	Map<String, Integer> routeRules = schema.getTableNameRoute();
+            	
+            	String tableName = QuickParserUtil.QuickParseSingleTable(stmt, charset, type);
+            	
+            	System.out.println("tableName:"+tableName);
+            	
+            	if (tableName != null) {
+            		Integer ii = routeRules.get(tableName);
+                	
+                	if (ii != null) {
+                		RouteResultsetNode[] nodes = new RouteResultsetNode[1];
+                    	nodes[0] = new RouteResultsetNode(dataNodes[ii], stmt);
+                    	
+                    	System.out.println("nodes[0]:"+nodes[0]);
+                    	
+                    	rrs.setNodes(nodes);
+                    	return rrs;
+                	} 
+            	}
+            	
+        	} 
+        	
+        	RouteResultsetNode[] nodes = new RouteResultsetNode[1];
+        	nodes[0] = new RouteResultsetNode(schema.getDataNode(), stmt);
+        	rrs.setNodes(nodes);
+        	return rrs;
+
         }
+        
+        
+        
 
         // 生成和展开AST
         SQLStatement ast = SQLParserDelegate.parse(stmt, charset == null ? MySQLParser.DEFAULT_CHARSET : charset);

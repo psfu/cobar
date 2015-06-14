@@ -27,10 +27,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.alibaba.cobar.CobarServer;
 import com.alibaba.cobar.config.model.ClusterConfig;
 import com.alibaba.cobar.config.model.QuarantineConfig;
 import com.alibaba.cobar.config.model.SystemConfig;
@@ -49,7 +51,10 @@ public class XMLServerLoader {
     private final Map<String, UserConfig> users;
     private final QuarantineConfig quarantine;
     private ClusterConfig cluster;
+    
+    private static final Logger LOGGER = Logger.getLogger(XMLServerLoader.class);
 
+    
     public XMLServerLoader() {
         this.system = new SystemConfig();
         this.users = new HashMap<String, UserConfig>();
@@ -78,7 +83,9 @@ public class XMLServerLoader {
         InputStream xml = null;
         try {
             dtd = XMLServerLoader.class.getResourceAsStream("/server.dtd");
+            LOGGER.info(XMLServerLoader.class.getResource("/server.dtd"));
             xml = XMLServerLoader.class.getResourceAsStream("/server.xml");
+            LOGGER.info(XMLServerLoader.class.getResource("/server.xml"));
             Element root = ConfigUtil.getDocument(dtd, xml).getDocumentElement();
             loadSystem(root);
             loadUsers(root);

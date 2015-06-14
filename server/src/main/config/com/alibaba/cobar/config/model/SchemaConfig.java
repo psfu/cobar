@@ -36,9 +36,13 @@ public class SchemaConfig {
     private final String[] metaDataNodes;
     private final boolean keepSqlSchema;
     private final Set<String> allDataNodes;
+    
+    private final boolean routeByTable;
+    private final Map<String, Integer> tableNameRoute;
+    
 
-    public SchemaConfig(String name, String dataNode, String group, boolean keepSqlSchema,
-                        Map<String, TableConfig> tables) {
+    public SchemaConfig(String name, String dataNode, String group, boolean keepSqlSchema, boolean routeByTable,
+                        Map<String, Integer> tableNameRoute, Map<String, TableConfig> tables) {
         this.name = name;
         this.dataNode = dataNode;
         this.group = group;
@@ -47,9 +51,16 @@ public class SchemaConfig {
         this.metaDataNodes = buildMetaDataNodes();
         this.allDataNodes = buildAllDataNodes();
         this.keepSqlSchema = keepSqlSchema;
+        this.routeByTable = routeByTable;
+        this.tableNameRoute = tableNameRoute;
     }
+    
+    
+    public boolean isRouteByTable() {
+		return routeByTable;
+	}
 
-    public boolean isKeepSqlSchema() {
+	public boolean isKeepSqlSchema() {
         return keepSqlSchema;
     }
 
@@ -87,8 +98,19 @@ public class SchemaConfig {
         }
         return allDataNodes.iterator().next();
     }
-
+    
+    
+    
+    
     /**
+     * 
+     */
+    public Map<String, Integer> getTableNameRoute() {
+		return tableNameRoute;
+	}
+
+
+	/**
      * 取得含有不同Meta信息的数据节点,比如表和表结构。
      */
     private String[] buildMetaDataNodes() {
