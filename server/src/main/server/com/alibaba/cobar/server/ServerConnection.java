@@ -143,7 +143,7 @@ public class ServerConnection extends FrontendConnection {
         // 路由计算
         RouteResultset rrs = null;
         try {
-            rrs = ServerRouter.route(schema, sql, this.charset, this);
+            rrs = ServerRouter.route(schema, sql, this.charset, this, type);
         } catch (SQLNonTransientException e) {
             StringBuilder s = new StringBuilder();
             LOGGER.warn(s.append(this).append(sql).toString(), e);
