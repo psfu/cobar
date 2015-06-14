@@ -16,39 +16,161 @@
 -->
 <!DOCTYPE cobar:schema SYSTEM "schema.dtd">
 <cobar:schema xmlns:cobar="http://cobar.alibaba.com/">
-
   <!-- schema定义 -->
-  <schema name="dbtest" dataNode="dnTest1">
-    <table name="tb2" dataNode="dnTest2,dnTest3" rule="rule1" />
+  <schema name="dal_test_02" dataNode="dal_test_02">
+    <table name="dal_t_01" dataNode="dal_test_01,dal_test_02,dal_test_03,dal_test_04" rule="rule1" />
+  </schema>
+  <schema name="dal_test_03" dataNode="dal_test_03">
+  </schema>
+  <schema name="dal_test_04" dataNode="dal_test_04">
+    <table name="dal_t_01" dataNode="dal_test_01,dal_test_02,dal_test_03" rule="rule1" />
+  </schema>
+  
+  <schema name="dal_test_01" dataNode="dal_test_05">
   </schema>
 
-  <!-- 数据节点定义，数据节点由数据源和其他一些参数组织而成。 -->
-  <dataNode name="dnTest1">
+
+  <schema name="dal_test_06" dataNode="dal_test_06[0]" routeByTable="true">
+  	<table name="allDataNodeForRoute" dataNode="dal_test_06[1],dal_test_06[2],dal_test_06[3]" rule="rule1" />
+  </schema>
+
+
+  <schema name="dal_test_07" dataNode="dal_test_07" routeByTable="true">
+  	<table name="allDataNodeForRoute" dataNode="dal_test_11,dal_test_12,dal_test_13" rule="rule1" />
+  </schema>
+
+
+  <!-- 数据节点定义，数据节点由数据源和其他一些参数组织而成。-->
+  <dataNode name="dal_test_01">
     <property name="dataSource">
-      <dataSourceRef>dsTest[0]</dataSourceRef>
+      <dataSourceRef>dal_test_01</dataSourceRef>
     </property>
   </dataNode>
-  <dataNode name="dnTest2">
+  <dataNode name="dal_test_02">
     <property name="dataSource">
-      <dataSourceRef>dsTest[1]</dataSourceRef>
+      <dataSourceRef>dal_test_02</dataSourceRef>
     </property>
   </dataNode>
-  <dataNode name="dnTest3">
+  <dataNode name="dal_test_03">
     <property name="dataSource">
-      <dataSourceRef>dsTest[2]</dataSourceRef>
+      <dataSourceRef>dal_test_03</dataSourceRef>
+    </property>
+  </dataNode>
+  <dataNode name="dal_test_04">
+    <property name="dataSource">
+      <dataSourceRef>dal_test_04</dataSourceRef>
     </property>
   </dataNode>
 
-  <!-- 数据源定义，数据源是一个具体的后端数据连接的表示。 -->
-  <dataSource name="dsTest" type="mysql">
-    <property name="location">
-      <location>10.20.153.177:3316/offer1</location>
-      <location>10.20.153.177:3316/offer1</location>
-      <location>10.20.153.177:3316/offer1</location>
+<dataNode name="dal_test_05">
+    <property name="dataSource">
+      <dataSourceRef>dal_test_01</dataSourceRef>
+      <dataSourceRef>dal_test_02</dataSourceRef>
+      <dataSourceRef>dal_test_03</dataSourceRef>
+      <dataSourceRef>dal_test_04</dataSourceRef>
     </property>
-    <property name="user">offer</property>
-    <property name="password">offer</property>
+    <property name="heartbeatSQL">select @@autocommit</property>
+  </dataNode>
+
+
+
+
+<dataNode name="dal_test_06">
+    <property name="dataSource">
+      <dataSourceRef>dal_test_01,dal_test_02,dal_test_03,dal_test_04</dataSourceRef>
+    </property>
+    <property name="heartbeatSQL">select @@autocommit</property>
+  </dataNode>
+
+
+
+
+
+ <dataNode name="dal_test_07">
+    <property name="dataSource">
+      <dataSourceRef>dal_test_01</dataSourceRef>
+    </property>
+    <property name="heartbeatSQL">select @@autocommit</property>
+  </dataNode>
+
+ <dataNode name="dal_test_11">
+    <property name="dataSource">
+      <dataSourceRef>dal_test_02</dataSourceRef>
+    </property>
+    <property name="heartbeatSQL">select @@autocommit</property>
+  </dataNode>
+
+ <dataNode name="dal_test_12">
+    <property name="dataSource">
+      <dataSourceRef>dal_test_03</dataSourceRef>
+    </property>
+    <property name="heartbeatSQL">select @@autocommit</property>
+  </dataNode>
+
+ <dataNode name="dal_test_13">
+    <property name="dataSource">
+      <dataSourceRef>dal_test_04</dataSourceRef>
+    </property>
+    <property name="heartbeatSQL">select @@autocommit</property>
+  </dataNode>
+
+
+
+
+
+
+
+  <dataSource name="dal_test_01" type="mysql">
+    <property name="location">
+      <location>10.77.134.16:10020/dal_test_01</location>
+    </property>
+    <property name="user">dal_test_01</property>
+    <property name="password">dal_test_01</property>
     <property name="sqlMode">STRICT_TRANS_TABLES</property>
   </dataSource>
 
+  <dataSource name="dal_test_02" type="mysql">
+    <property name="location">
+      <location>10.77.134.16:10020/dal_test_02</location>
+    </property>
+    <property name="user">dal_test_02</property>
+    <property name="password">dal_test_02</property>
+    <property name="sqlMode">STRICT_TRANS_TABLES</property>
+  </dataSource>
+
+  <dataSource name="dal_test_03" type="mysql">
+    <property name="location">
+      <location>10.77.135.222:10016/dal_test_03</location>
+    </property>
+    <property name="user">dal_test_03</property>
+    <property name="password">dal_test_03</property>
+    <property name="sqlMode">STRICT_TRANS_TABLES</property>
+  </dataSource>
+  
+   <dataSource name="dal_test_04" type="mysql">
+    <property name="location">
+      <location>10.77.135.222:10016/dal_test_04</location>
+    </property>
+    <property name="user">dal_test_04</property>
+    <property name="password">dal_test_04</property>
+    <property name="sqlMode">STRICT_TRANS_TABLES</property>
+  </dataSource>
+  
+
+
+
+
+  <!-- 数据源定义，数据源是一个具体的后端数据连接的表示。-->
+  <!-- 
+  <dataSource name="dal_test_01" type="mysql">
+    <property name="location">
+      <location>192.168.0.1:3306/dbtest1</location>
+      <location>192.168.0.1:3306/dbtest2</location>
+      <location>192.168.0.1:3306/dbtest3</location>
+    </property>
+    <property name="user">test</property>
+    <property name="password"></property>
+    <property name="sqlMode">STRICT_TRANS_TABLES</property>
+  </dataSource>
+-->
 </cobar:schema>

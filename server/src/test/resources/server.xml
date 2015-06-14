@@ -32,12 +32,49 @@
     <property name="clusterHeartbeatPass">_HEARTBEAT_PASS_</property>
   </system>
   -->
-
+  <!--
+  <system>
+    <property name="serverPort">8066</property>
+    <property name="managerPort">9066</property>
+    <property name="initExecutor">8</property>
+    <property name="timerExecutor">2</property>
+    <property name="managerExecutor">2</property>
+    <property name="processors">2</property>
+    <property name="processorHandler">4</property>
+    <property name="processorExecutor">4</property>
+  </system>
+  -->
+      
   <!-- 用户访问定义，用户名、密码、schema等信息。 -->
   <user name="test">
     <property name="password">test</property>
-    <property name="schemas">dbtest</property>
+    <!-- <property name="schemas">dbtest</property>-->
   </user>
+  <user name="admin">
+    <property name="password">admin</property>
+    <!-- <property name="schemas">dbtest</property>-->
+  </user>
+  
+  <user name="dal_test_03">
+    <property name="password">1</property>
+    <property name="schemas">dal_test_03</property>
+  </user>
+  <user name="dal_test_02">
+    <property name="password">1</property>
+    <property name="schemas">dal_test_02</property>
+  </user>
+  <user name="dal_test_04">
+    <property name="password">1</property>
+    <property name="schemas">dal_test_04</property>
+  </user>
+  
+  
+  
+  <!--  
+  <user name="t1">
+    <property name="password">t1</property>
+  </user>
+  -->
   <!--
   <user name="root">
     <property name="password"></property>
@@ -46,7 +83,7 @@
 
   <!-- 集群列表定义，指定集群节点的主机和权重，用于集群间的心跳和客户端负载均衡。 -->
   <cluster>
-    <node name="cobar1">
+    <node name="c01">
       <property name="host">127.0.0.1</property>
       <property name="weight">1</property>
     </node>

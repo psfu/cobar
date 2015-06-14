@@ -14,15 +14,22 @@
  - See the License for the specific language governing permissions and
  - limitations under the License.
 -->
-<!ELEMENT cobar:rule (tableRule*,function*)>
+<!ELEMENT cobar:rule (tableRule*,tableRuleSp*,function*)>
 <!ATTLIST cobar:rule xmlns:cobar CDATA #FIXED "http://cobar.alibaba.com/">
 
-<!ELEMENT tableRule (rule+)>
+<!ELEMENT tableRule (rule*)>
 <!ATTLIST tableRule name CDATA #REQUIRED>
 
 <!ELEMENT rule (columns,algorithm)>
 <!ELEMENT columns (#PCDATA)>
 <!ELEMENT algorithm (#PCDATA)>
+
+<!ELEMENT tableRuleSp (tableNameRule*)>
+<!ATTLIST tableRuleSp name CDATA #REQUIRED>
+
+<!ELEMENT tableNameRule (ranges)>
+<!ELEMENT ranges (range+)>
+<!ELEMENT range (#PCDATA)>
 
 <!ELEMENT function (property*)>
 <!ATTLIST function name CDATA #REQUIRED>

@@ -24,24 +24,12 @@
       <algorithm><![CDATA[ func1(${id}) ]]></algorithm>
     </rule>
   </tableRule>
-  
-  <!-- 按表名跳转路由定义，快速匹配，注意和schema里给的顺序匹配 , range可以为空-->
-  <tableRuleSp name="tableNameRule01">
-    <tableNameRule>
-      <ranges><!--
-		<range>dal_t_r$0-5</range> -->
-		<range>dal_t_r$6-10</range>
-		<range>dal_t_r$11-15</range>
-		<range>dal_t_r$16-20</range>
-      </ranges>
-    </tableNameRule>
-  </tableRuleSp>
 
   <!-- 路由函数定义 -->
   <function name="func1"
     class="com.alibaba.cobar.route.function.PartitionByLong">
-    <property name="partitionCount">4</property>
-    <property name="partitionLength">256</property>
+    <property name="partitionCount">2</property>
+    <property name="partitionLength">512</property>
   </function>
 
 </cobar:rule>
