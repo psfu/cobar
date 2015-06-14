@@ -40,6 +40,9 @@ import com.alibaba.cobar.exception.ErrorPacketException;
 import com.alibaba.cobar.exception.UnknownCharsetException;
 import com.alibaba.cobar.exception.UnknownPacketException;
 import com.alibaba.cobar.exception.UnknownTxIsolationException;
+import com.alibaba.cobar.logsql.SQLLog;
+import com.alibaba.cobar.logsql.SQLLogList;
+import com.alibaba.cobar.logsql.SQLLogger;
 import com.alibaba.cobar.mysql.CharsetUtil;
 import com.alibaba.cobar.mysql.MySQLDataSource;
 import com.alibaba.cobar.mysql.SecurityUtil;
@@ -203,15 +206,7 @@ public final class MySQLChannel implements Channel {
     public BinaryPacket execute(RouteResultsetNode rrn, ServerConnection sc, boolean autocommit) throws IOException {
         // 状态一致性检查
         if (this.charsetIndex != sc.getCharsetIndex()) {
-            /*如果后端MySQL服务器配置了character_set_server=utf8mb4,
-            并且数据库客户端要求使用uft8，
-            我们将不发送客户端的字符集要求。
-            这种情况在我们使用mysql官方的Connector/J编程的时候遇见，
-            详细见：http://dev.mysql.com/doc/connector-j/en/connector-j-usagenotes-troubleshooting.html#qandaitem-15-1-15
-                    https://dev.mysql.com/doc/relnotes/connector-j/en/news-5-1-13.html
-            */
-            if(this.charsetIndex != 45 && sc.getCharsetIndex() != 33)
-                sendCharset(sc.getCharsetIndex());
+            sendCharset(sc.getCharsetIndex());
         }
         if (this.txIsolation != sc.getTxIsolation()) {
             sendTxIsolation(sc.getTxIsolation());
@@ -220,6 +215,8 @@ public final class MySQLChannel implements Channel {
             sendAutocommit(autocommit);
         }
 
+        
+        
         // 生成执行数据包
         CommandPacket packet = new CommandPacket();
         packet.packetId = 0;
@@ -236,18 +233,56 @@ public final class MySQLChannel implements Channel {
         out.flush();
         BinaryPacket bin = receive();
 
+
+        
+        
         // SQL执行时间统计
         long now = TimeUtil.currentTimeMillis();
         if (now > lastActiveTime) {
             recordSql(sc.getHost(), sc.getSchema(), rrn.getStatement());
         }
+        
+        // SQL 整体统计！
+        if (true) {
+        	recordSqlSp(sc, rrn, now);
+        }
+        
 
         // 记录执行结束时间
         lastActiveTime = now;
         return bin;
     }
+    
+    /**
+     * 新增SQL 日志记录
+     * @param sc 
+     * @param now
+     */
+    private void recordSqlSp(ServerConnection sc, RouteResultsetNode rrn, long now) {
+    	if(!SQLLogger.enableLog) {
+    		return;
+    	}
+    	if(sc.getHost() == null) {
+    		return;
+    	}
+    	try {
+	    	SQLLogList ll = SQLLogger.getSQLLogger();
+	    	SQLLog l = ll.next();
+	    	l.host = sc.getHost();
+	    	l.statement = rrn.getStatement();
+	    	l.schema = sc.getSchema();
+	    	l.dataSource = dsc.getHost();
+	    	l.dataSourceSchema = dsc.getDatabase();
+	    	l.info = Thread.currentThread().getName();
+	    	l.startTime = lastActiveTime;
+	    	l.executeTime = now - lastActiveTime;
+	    	SQLLogger.dealSQLLogger(ll);
+    	} catch(Exception e) {
+    		e.printStackTrace();
+    	}
+	}
 
-    public BinaryPacket receive() throws IOException {
+	public BinaryPacket receive() throws IOException {
         BinaryPacket bin = new BinaryPacket();
         bin.read(in);
         return bin;
