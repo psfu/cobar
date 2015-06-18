@@ -54,11 +54,11 @@ import com.alibaba.cobar.parser.recognizer.SQLParserDelegate;
 import com.alibaba.cobar.parser.recognizer.mysql.syntax.MySQLParser;
 import com.alibaba.cobar.parser.util.ArrayUtil;
 import com.alibaba.cobar.parser.util.Pair;
+import com.alibaba.cobar.parser.util.TableUtil;
 import com.alibaba.cobar.parser.visitor.MySQLOutputASTVisitor;
 import com.alibaba.cobar.route.hint.CobarHint;
 import com.alibaba.cobar.route.visitor.PartitionKeyVisitor;
 import com.alibaba.cobar.util.CollectionUtil;
-import com.alibaba.cobar.util.QuickParserUtil;
 
 /**
  * @author xianmao.hexm
@@ -121,7 +121,7 @@ public final class ServerRouter {
             	
             	Map<String, Integer> routeRules = schema.getTableNameRoute();
             	
-            	String tableName = QuickParserUtil.QuickParseSingleTable(stmt, charset, type);
+            	String tableName = TableUtil.QuickParseSingleTable(stmt, charset, type);
             	
             	System.out.println("tableName:"+tableName);
             	

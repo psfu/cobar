@@ -1,4 +1,4 @@
-package com.alibaba.cobar.util;
+package com.alibaba.cobar.parser.util;
 
 import java.sql.SQLSyntaxErrorException;
 import java.util.List;
@@ -13,14 +13,13 @@ import com.alibaba.cobar.parser.ast.stmt.dml.DMLInsertReplaceStatement;
 import com.alibaba.cobar.parser.ast.stmt.dml.DMLUpdateStatement;
 import com.alibaba.cobar.parser.recognizer.SQLParserDelegate;
 import com.alibaba.cobar.parser.recognizer.mysql.syntax.MySQLParser;
-import com.alibaba.cobar.parser.util.CharTypes;
 import com.alibaba.cobar.server.parser.ServerParse;
 /**
  * 
  * @author vv
  *
  */
-public class QuickParserUtil {
+public class TableUtil {
 
 	public static void log(int l, Object o) {
 		System.out.println(o.toString());
