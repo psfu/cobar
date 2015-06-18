@@ -105,6 +105,7 @@ public final class ServerRouter {
         } 
         
         /**
+         *  新增
          *	目前的按表名路由的快速实现 
          */
         if (schema.isRouteByTable()) {

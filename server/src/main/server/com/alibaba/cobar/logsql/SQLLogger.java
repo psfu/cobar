@@ -4,6 +4,10 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
+import com.alibaba.cobar.config.model.DataSourceConfig;
+import com.alibaba.cobar.route.RouteResultsetNode;
+import com.alibaba.cobar.server.ServerConnection;
+
 public class SQLLogger extends Common {
 
 	public static final int bllMax = 60;
@@ -25,6 +29,7 @@ public class SQLLogger extends Common {
 	}
 
 	/**
+	 * 旧方法
 	 * 接收SQLLog进行处理
 	 * 
 	 * @param r
@@ -50,6 +55,31 @@ public class SQLLogger extends Common {
 		}
 
 	}
+	
+	public static final void recordSql(ServerConnection sc,DataSourceConfig dsc,RouteResultsetNode rrn,long lastActiveTime, long now){
+    	if(!SQLLogger.enableLog) {
+    		return;
+    	}
+    	if(sc.getHost() == null) {
+    		return;
+    	}
+    	try {
+	    	SQLLogList ll = SQLLogger.getSQLLogger();
+	    	SQLLog l = ll.next();
+	    	l.host = sc.getHost();
+	    	l.statement = rrn.getStatement();
+	    	l.schema = sc.getSchema();
+	    	l.dataSource = dsc.getHost();
+	    	l.dataSourceSchema = dsc.getDatabase();
+	    	l.info = Thread.currentThread().getName();
+	    	l.startTime = lastActiveTime;
+	    	l.executeTime = now - lastActiveTime;
+	    	SQLLogger.dealSQLLogger(ll);
+    	} catch(Exception e) {
+    		e.printStackTrace();
+    	}
+	}
+	
 
 	/**
 	 * 给当前在记录的一个记录列表

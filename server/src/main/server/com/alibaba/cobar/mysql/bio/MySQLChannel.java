@@ -254,6 +254,7 @@ public final class MySQLChannel implements Channel {
     }
     
     /**
+     * 新增
      * 新增SQL 日志记录
      * @param sc 
      * @param now
