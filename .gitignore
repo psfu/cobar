@@ -1,3 +1,16 @@
 /manager/target/
 /driver/target/
 /server/target/
+/manager/.settings/*
+/driver/.settings/*
+/server/.settings/*
+/manager/classes/
+/driver/classes/
+/server/classes/
+.project
+.classpath
+.DS_Store
+.idea
+cobar-server.iml
+cobar-manager.iml
+cobar-driver.iml
